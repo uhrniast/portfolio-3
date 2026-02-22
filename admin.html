@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Portfolio Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0f0f; --bg2: #1a1a1a; --bg3: #2a2a2a;
+  --fg: #f0f0f0; --fg2: #a0a0a0; --fg3: #606060;
+  --accent: #F95C4B; --accent2: #9FBD8A;
+  --border: rgba(255,255,255,0.07); --card: #1c1c1c;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 12px; --t: 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; }
+a { color: inherit; text-decoration: none; }
+
+/* HEADER */
+.admin-header {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.admin-logo { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+.admin-logo span { color: var(--accent); }
+.admin-header-actions { display: flex; align-items: center; gap: 12px; }
+.header-btn {
+  padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--fg2); font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 1px; cursor: pointer; transition: all var(--t);
+  display: flex; align-items: center; gap: 6px; text-transform: uppercase;
+}
+.header-btn:hover { border-color: var(--fg3); color: var(--fg); }
+.header-btn.save-btn { border-color: var(--accent); color: var(--accent); }
+.header-btn.save-btn:hover { background: var(--accent); color: white; }
+.header-btn.preview-btn { border-color: var(--accent2); color: var(--accent2); }
+.header-btn.preview-btn:hover { background: var(--accent2); color: #1a1a1a; }
+
+/* LAYOUT */
+.admin-body { display: flex; flex: 1; min-height: 0; }
+.sidebar {
+  width: 240px; background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 24px 0; display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+}
+.sidebar-section { padding: 0 16px 8px; font-family: var(--font-mono); font-size: 0.62rem; color: var(--fg3); letter-spacing: 3px; text-transform: uppercase; margin-top: 16px; margin-bottom: 4px; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; cursor: pointer; font-size: 0.88rem; color: var(--fg2);
+  transition: all var(--t); border-left: 2px solid transparent;
+}
+.sidebar-item:hover { color: var(--fg); background: var(--bg3); }
+.sidebar-item.active { color: var(--accent); border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.sidebar-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+/* MAIN CONTENT */
+.admin-main { flex: 1; overflow-y: auto; padding: 32px; max-width: 900px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* PANEL HEADER */
+.panel-header { margin-bottom: 28px; }
+.panel-title { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+.panel-sub { color: var(--fg2); font-size: 0.9rem; }
+
+/* FORM ELEMENTS */
+.form-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+.form-section-title { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.form-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+.form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { }
+.form-label { display: block; font-family: var(--font-mono); font-size: 0.68rem; color: var(--fg2); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+.form-input, .form-textarea, .form-select {
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  background: var(--bg2); border: 1px solid var(--border); color: var(--fg);
+  font-family: var(--font-body); font-size: 0.9rem; transition: all var(--t); outline: none;
+  resize: vertical;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.form-textarea { min-height: 100px; }
+.form-select option { background: var(--bg2); }
+
+/* ARRAY ITEMS */
+.array-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.array-item {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 20px;
+  position: relative; transition: all var(--t);
+}
+.array-item:hover { border-color: var(--fg3); }
+.array-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.array-item-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg2); letter-spacing: 1px; }
+.item-remove-btn {
+  width: 28px; height: 28px; border-radius: 50%; background: transparent; border: 1px solid var(--border);
+  color: var(--fg3); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; transition: all var(--t);
+}
+.item-remove-btn:hover { background: #ff4040; border-color: #ff4040; color: white; }
+.add-item-btn {
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  width: 100%; padding: 11px; border-radius: 10px; border: 1px dashed var(--border);
+  background: transparent; color: var(--fg3); font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 1px; cursor: pointer; transition: all var(--t); text-transform: uppercase;
+}
+.add-item-btn:hover { border-color: var(--accent2); color: var(--accent2); background: color-mix(in srgb, var(--accent2) 5%, transparent); }
+
+/* THEME PICKER */
+.theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.theme-card {
+  border-radius: 12px; padding: 16px; cursor: pointer; border: 2px solid var(--border);
+  transition: all var(--t); text-align: center;
+}
+.theme-card:hover { transform: translateY(-2px); }
+.theme-card.selected { border-color: var(--accent); }
+.theme-swatch-large { height: 60px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+.theme-name { font-family: var(--font-mono); font-size: 0.7rem; color: var(--fg2); letter-spacing: 1px; text-transform: uppercase; }
+.theme-card.selected .theme-name { color: var(--accent); }
+
+/* JSON EDITOR */
+.json-editor-wrap { position: relative; }
+.json-editor {
+  width: 100%; min-height: 500px; padding: 20px; border-radius: 10px;
+  background: #0a0a0a; border: 1px solid var(--border); color: #e0e0e0;
+  font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.7;
+  resize: vertical; outline: none; white-space: pre; overflow-wrap: normal; overflow-x: auto;
+}
+.json-editor:focus { border-color: var(--accent); }
+.json-actions { display: flex; gap: 10px; margin-top: 12px; }
+.json-btn {
+  padding: 9px 20px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--fg2); font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 1px; cursor: pointer; transition: all var(--t); text-transform: uppercase;
+}
+.json-btn:hover { border-color: var(--fg3); color: var(--fg); }
+.json-btn.validate-btn { border-color: var(--accent2); color: var(--accent2); }
+.json-btn.apply-btn { border-color: var(--accent); color: var(--accent); }
+.json-btn.apply-btn:hover { background: var(--accent); color: white; }
+.json-status { padding: 10px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; margin-top: 10px; display: none; }
+.json-status.success { background: color-mix(in srgb, #4CAF50 15%, transparent); border: 1px solid #4CAF50; color: #81C784; display: block; }
+.json-status.error { background: color-mix(in srgb, #f44336 15%, transparent); border: 1px solid #f44336; color: #ef9a9a; display: block; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 20px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--fg);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1); display: flex; align-items: center; gap: 10px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: #4CAF50; }
+.toast.error { border-color: #f44336; }
+
+/* TOGGLE */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; }
+.toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; border-radius: 24px;
+  background: var(--bg3); border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+.toggle-slider::before {
+  content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  left: 2px; top: 2px; background: var(--fg3); transition: all 0.3s ease;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); border-color: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: white; }
+.toggle-label { font-size: 0.88rem; color: var(--fg2); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+/* GITHUB INSTRUCTIONS */
+.instructions { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+.instruction-step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.step-content h4 { font-family: var(--font-display); font-weight: 700; margin-bottom: 4px; }
+.step-content p { color: var(--fg2); font-size: 0.88rem; line-height: 1.6; }
+.code-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-family: var(--font-mono); font-size: 0.78rem; color: #aef; margin-top: 8px; overflow-x: auto; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .admin-main { padding: 20px 16px; }
+  .form-row.cols-2, .form-row.cols-3 { grid-template-columns: 1fr; }
+  .theme-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<header class="admin-header">
+  <div class="admin-logo">Portfolio<span>.</span>Admin</div>
+  <div class="admin-header-actions">
+    <button class="header-btn preview-btn" onclick="window.open('index.html','_blank')">↗ Preview Site</button>
+    <button class="header-btn save-btn" onclick="saveAll()">💾 Save All</button>
+  </div>
+</header>
+
+<div class="admin-body">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Settings</div>
+    <div class="sidebar-item active" onclick="showPanel('general')">
+      <span class="sidebar-icon">⚙️</span> General
+    </div>
+    <div class="sidebar-item" onclick="showPanel('theme')">
+      <span class="sidebar-icon">🎨</span> Theme
+    </div>
+    <div class="sidebar-section">Content</div>
+    <div class="sidebar-item" onclick="showPanel('scrollbar')">
+      <span class="sidebar-icon">📢</span> Scroll Bar
+    </div>
+    <div class="sidebar-item" onclick="showPanel('about')">
+      <span class="sidebar-icon">👤</span> About
+    </div>
+    <div class="sidebar-item" onclick="showPanel('skills')">
+      <span class="sidebar-icon">⚡</span> Skills
+    </div>
+    <div class="sidebar-item" onclick="showPanel('education')">
+      <span class="sidebar-icon">🎓</span> Education
+    </div>
+    <div class="sidebar-item" onclick="showPanel('projects')">
+      <span class="sidebar-icon">🚀</span> Projects
+    </div>
+    <div class="sidebar-item" onclick="showPanel('internships')">
+      <span class="sidebar-icon">💼</span> Internships
+    </div>
+    <div class="sidebar-item" onclick="showPanel('certificates')">
+      <span class="sidebar-icon">🏅</span> Certificates
+    </div>
+    <div class="sidebar-item" onclick="showPanel('contact')">
+      <span class="sidebar-icon">✉️</span> Contact
+    </div>
+    <div class="sidebar-section">Advanced</div>
+    <div class="sidebar-item" onclick="showPanel('json')">
+      <span class="sidebar-icon">{ }</span> JSON Editor
+    </div>
+    <div class="sidebar-item" onclick="showPanel('deploy')">
+      <span class="sidebar-icon">🚀</span> Deploy Guide
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+
+    <!-- GENERAL -->
+    <div class="panel active" id="panel-general">
+      <div class="panel-header">
+        <div class="panel-title">General Settings</div>
+        <div class="panel-sub">Basic information about you and your portfolio.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Personal Info</div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" id="meta-name" placeholder="Alex Rivera"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input class="form-input" id="meta-location" placeholder="San Francisco, CA"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tagline / Role</label>
+            <input class="form-input" id="meta-tagline" placeholder="Full Stack Developer & Creative Technologist"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Short Bio (Hero Section)</label>
+            <textarea class="form-textarea" id="meta-bio" rows="3" placeholder="I'm a passionate developer..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Contact & Links</div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="meta-email" type="email" placeholder="alex@example.com"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resume URL</label>
+            <input class="form-input" id="meta-resume" placeholder="https://..."/>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">GitHub URL</label>
+            <input class="form-input" id="meta-github" placeholder="https://github.com/..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">LinkedIn URL</label>
+            <input class="form-input" id="meta-linkedin" placeholder="https://linkedin.com/in/..."/>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">Twitter URL</label>
+            <input class="form-input" id="meta-twitter" placeholder="https://twitter.com/..."/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME -->
+    <div class="panel" id="panel-theme">
+      <div class="panel-header">
+        <div class="panel-title">Theme</div>
+        <div class="panel-sub">Choose a color theme for your portfolio.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Color Themes</div>
+        <div class="theme-grid" id="themeGrid">
+          <div class="theme-card" data-theme="midnight" onclick="selectTheme('midnight')">
+            <div class="theme-swatch-large" style="background:#0f0f0f;border:1px solid #333">🌑</div>
+            <div class="theme-name">Midnight</div>
+          </div>
+          <div class="theme-card" data-theme="cloud" onclick="selectTheme('cloud')">
+            <div class="theme-swatch-large" style="background:#F2EDE7">☁️</div>
+            <div class="theme-name">Cloud</div>
+          </div>
+          <div class="theme-card" data-theme="forest" onclick="selectTheme('forest')">
+            <div class="theme-swatch-large" style="background:#1a2e24">🌲</div>
+            <div class="theme-name">Forest</div>
+          </div>
+          <div class="theme-card" data-theme="royal" onclick="selectTheme('royal')">
+            <div class="theme-swatch-large" style="background:#162660">👑</div>
+            <div class="theme-name">Royal Blue</div>
+          </div>
+          <div class="theme-card" data-theme="beige" onclick="selectTheme('beige')">
+            <div class="theme-swatch-large" style="background:#F1E4D1">🌿</div>
+            <div class="theme-name">Warm Beige</div>
+          </div>
+          <div class="theme-card" data-theme="paper" onclick="selectTheme('paper')">
+            <div class="theme-swatch-large" style="background:#F6F4F1">📄</div>
+            <div class="theme-name">Paper</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCROLL BAR -->
+    <div class="panel" id="panel-scrollbar">
+      <div class="panel-header">
+        <div class="panel-title">Scrolling Bar</div>
+        <div class="panel-sub">Messages shown in the animated ticker below the hero section.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Ticker Items</div>
+        <div class="array-list" id="scrollbar-list"></div>
+        <button class="add-item-btn" onclick="addScrollItem()">+ Add Item</button>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="panel" id="panel-about">
+      <div class="panel-header">
+        <div class="panel-title">About Me</div>
+        <div class="panel-sub">Your full bio and highlight cards.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Bio</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Description</label>
+            <textarea class="form-textarea" id="about-description" rows="6" placeholder="Tell your story..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Highlight Cards (e.g. "5+ Years Experience")</div>
+        <div class="array-list" id="about-highlights-list"></div>
+        <button class="add-item-btn" onclick="addHighlight()">+ Add Highlight</button>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="panel" id="panel-skills">
+      <div class="panel-header">
+        <div class="panel-title">Skills</div>
+        <div class="panel-sub">Your technical skills with proficiency levels.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Skills List</div>
+        <div class="array-list" id="skills-list"></div>
+        <button class="add-item-btn" onclick="addSkill()">+ Add Skill</button>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="panel" id="panel-education">
+      <div class="panel-header">
+        <div class="panel-title">Education</div>
+        <div class="panel-sub">Your academic background displayed as a timeline.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Education Entries</div>
+        <div class="array-list" id="education-list"></div>
+        <button class="add-item-btn" onclick="addEducation()">+ Add Entry</button>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="panel" id="panel-projects">
+      <div class="panel-header">
+        <div class="panel-title">Projects</div>
+        <div class="panel-sub">Showcase your work with custom-shaped cards.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Projects</div>
+        <div class="array-list" id="projects-list"></div>
+        <button class="add-item-btn" onclick="addProject()">+ Add Project</button>
+      </div>
+    </div>
+
+    <!-- INTERNSHIPS -->
+    <div class="panel" id="panel-internships">
+      <div class="panel-header">
+        <div class="panel-title">Internships</div>
+        <div class="panel-sub">Work experience shown as flip cards.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Internship Entries</div>
+        <div class="array-list" id="internships-list"></div>
+        <button class="add-item-btn" onclick="addInternship()">+ Add Internship</button>
+      </div>
+    </div>
+
+    <!-- CERTIFICATES -->
+    <div class="panel" id="panel-certificates">
+      <div class="panel-header">
+        <div class="panel-title">Certificates</div>
+        <div class="panel-sub">Your certifications and achievements.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Certificates</div>
+        <div class="array-list" id="certificates-list"></div>
+        <button class="add-item-btn" onclick="addCertificate()">+ Add Certificate</button>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="panel" id="panel-contact">
+      <div class="panel-header">
+        <div class="panel-title">Contact</div>
+        <div class="panel-sub">Your contact section content and social links.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Contact Info</div>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label class="form-label">Headline</label>
+            <input class="form-input" id="contact-headline" placeholder="Get In Touch"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subheading</label>
+            <input class="form-input" id="contact-sub" placeholder="Let's build something amazing"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" id="contact-desc" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Social Links</div>
+        <div class="array-list" id="contact-links-list"></div>
+        <button class="add-item-btn" onclick="addContactLink()">+ Add Link</button>
+      </div>
+    </div>
+
+    <!-- JSON EDITOR -->
+    <div class="panel" id="panel-json">
+      <div class="panel-header">
+        <div class="panel-title">JSON Editor</div>
+        <div class="panel-sub">Directly edit the raw data.json. Advanced users only.</div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Raw JSON</div>
+        <div class="json-editor-wrap">
+          <textarea class="json-editor" id="jsonEditor" spellcheck="false"></textarea>
+        </div>
+        <div class="json-actions">
+          <button class="json-btn validate-btn" onclick="validateJSON()">✓ Validate</button>
+          <button class="json-btn apply-btn" onclick="applyJSON()">⚡ Apply Changes</button>
+          <button class="json-btn" onclick="loadJSONEditor()">↺ Reload</button>
+          <button class="json-btn" onclick="downloadJSON()">↓ Download JSON</button>
+        </div>
+        <div class="json-status" id="jsonStatus"></div>
+      </div>
+    </div>
+
+    <!-- DEPLOY -->
+    <div class="panel" id="panel-deploy">
+      <div class="panel-header">
+        <div class="panel-title">Deploy to GitHub Pages</div>
+        <div class="panel-sub">Step-by-step guide to host your portfolio for free.</div>
+      </div>
+      <div class="instructions">
+        <div class="instruction-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Create a GitHub Repository</h4>
+            <p>Go to github.com and create a new repository named <strong>username.github.io</strong> (replace "username" with your actual GitHub username). Make it public.</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Download Your Portfolio Files</h4>
+            <p>Download <code>index.html</code>, <code>admin.html</code>, and <code>data.json</code> from this admin panel using the save button above.</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Upload Files to GitHub</h4>
+            <p>Go to your repository → click "uploading an existing file" → drag and drop all three files → commit changes.</p>
+            <div class="code-block">Or via Git CLI:
+git init
+git add .
+git commit -m "Initial portfolio"
+git branch -M main
+git remote add origin https://github.com/USERNAME/USERNAME.github.io.git
+git push -u origin main</div>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Enable GitHub Pages</h4>
+            <p>Go to Repository → Settings → Pages → Source: Deploy from branch → Branch: main → / (root) → Save.</p>
+          </div>
+        </div>
+        <div class="instruction-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Your Site is Live! 🎉</h4>
+            <p>Visit <strong>https://username.github.io</strong> — it usually takes 1-2 minutes to go live.</p>
+            <p style="margin-top:8px;color:var(--accent2);">📝 To update content: edit data.json on GitHub directly, or run admin.html locally, edit and download the JSON, then re-upload.</p>
+          </div>
+        </div>
+      </div>
+      <div class="form-section" style="margin-top:0">
+        <div class="form-section-title">Quick Download</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="json-btn apply-btn" onclick="downloadJSON()">↓ Download data.json</button>
+          <a class="json-btn" href="index.html" download>↓ Download index.html</a>
+          <a class="json-btn" href="admin.html" download>↓ Download admin.html</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let data = null;
+const DATA_URL = 'data.json';
+
+// ===== PANEL NAV =====
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'json') loadJSONEditor();
+}
+
+// ===== THEME PANEL =====
+function selectTheme(theme) {
+  data.meta.theme = theme;
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('selected', c.dataset.theme === theme));
+  showToast('Theme set to ' + theme, 'success');
+}
+
+// ===== TOAST =====
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  t.textContent = (icons[type]||'') + ' ' + msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== LOAD DATA =====
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    data = await res.json();
+  } catch(e) {
+    // Use empty template if no data.json
+    data = { meta:{theme:'midnight',name:'',tagline:'',bio:'',location:'',email:'',github:'',linkedin:'',twitter:'',resume:''}, scrollingBar:[], about:{headline:'About Me',description:'',highlights:[]}, skills:[], education:[], projects:[], internships:[], certificates:[], contact:{headline:'Get In Touch',subheading:'',description:'',links:[]} };
+    showToast('No data.json found. Starting fresh.', 'info');
+  }
+  populateAll();
+}
+
+// ===== POPULATE FORMS =====
+function populateAll() {
+  const m = data.meta || {};
+  setVal('meta-name', m.name);
+  setVal('meta-tagline', m.tagline);
+  setVal('meta-bio', m.bio);
+  setVal('meta-location', m.location);
+  setVal('meta-email', m.email);
+  setVal('meta-github', m.github);
+  setVal('meta-linkedin', m.linkedin);
+  setVal('meta-twitter', m.twitter);
+  setVal('meta-resume', m.resume);
+  // Theme
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('selected', c.dataset.theme === m.theme));
+  // About
+  setVal('about-description', data.about?.description);
+  // Contact
+  const c = data.contact || {};
+  setVal('contact-headline', c.headline);
+  setVal('contact-sub', c.subheading);
+  setVal('contact-desc', c.description);
+  // Arrays
+  buildScrollbarList();
+  buildHighlightsList();
+  buildSkillsList();
+  buildEducationList();
+  buildProjectsList();
+  buildInternshipsList();
+  buildCertificatesList();
+  buildContactLinksList();
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val || '';
+}
+
+function getVal(id) {
+  return document.getElementById(id)?.value || '';
+}
+
+// ===== COLLECT DATA =====
+function collectAll() {
+  data.meta = {
+    ...data.meta,
+    name: getVal('meta-name'),
+    tagline: getVal('meta-tagline'),
+    bio: getVal('meta-bio'),
+    location: getVal('meta-location'),
+    email: getVal('meta-email'),
+    github: getVal('meta-github'),
+    linkedin: getVal('meta-linkedin'),
+    twitter: getVal('meta-twitter'),
+    resume: getVal('meta-resume')
+  };
+  data.about = { ...data.about, description: getVal('about-description'), highlights: collectHighlights() };
+  data.scrollingBar = collectScrollItems();
+  data.skills = collectSkills();
+  data.education = collectEducation();
+  data.projects = collectProjects();
+  data.internships = collectInternships();
+  data.certificates = collectCertificates();
+  data.contact = { headline: getVal('contact-headline'), subheading: getVal('contact-sub'), description: getVal('contact-desc'), links: collectContactLinks() };
+}
+
+// ===== SAVE =====
+function saveAll() {
+  collectAll();
+  const jsonStr = JSON.stringify(data, null, 2);
+  // Try to save to data.json (requires server, not available on static hosting)
+  // Instead, download the file
+  downloadFile(jsonStr, 'data.json', 'application/json');
+  showToast('data.json downloaded! Upload to GitHub to update.', 'success');
+}
+
+function downloadJSON() {
+  collectAll();
+  downloadFile(JSON.stringify(data, null, 2), 'data.json', 'application/json');
+  showToast('data.json downloaded!', 'success');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===== SCROLLBAR LIST =====
+function buildScrollbarList() {
+  const list = document.getElementById('scrollbar-list');
+  list.innerHTML = (data.scrollingBar || []).map((item, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">Item ${i+1}</span>
+        <button class="item-remove-btn" onclick="removeScrollItem(${i})">✕</button>
+      </div>
+      <input class="form-input" value="${escHtml(item)}" onchange="data.scrollingBar[${i}]=this.value" placeholder="⚡ Your message here"/>
+    </div>
+  `).join('');
+}
+
+function addScrollItem() {
+  data.scrollingBar = data.scrollingBar || [];
+  data.scrollingBar.push('✨ New Item');
+  buildScrollbarList();
+}
+
+function removeScrollItem(i) {
+  data.scrollingBar.splice(i, 1);
+  buildScrollbarList();
+}
+
+function collectScrollItems() {
+  return Array.from(document.querySelectorAll('#scrollbar-list .form-input')).map(el => el.value);
+}
+
+// ===== HIGHLIGHTS =====
+function buildHighlightsList() {
+  const list = document.getElementById('about-highlights-list');
+  list.innerHTML = (data.about?.highlights || []).map((h, i) => `
+    <div class="array-item" style="display:flex;align-items:center;gap:12px;padding:14px 20px">
+      <input class="form-input" value="${escHtml(h)}" placeholder="5+ Years Experience" style="flex:1;margin:0"/>
+      <button class="item-remove-btn" onclick="removeHighlight(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addHighlight() {
+  if (!data.about) data.about = {};
+  data.about.highlights = data.about.highlights || [];
+  data.about.highlights.push('✦ New Achievement');
+  buildHighlightsList();
+}
+
+function removeHighlight(i) {
+  data.about.highlights.splice(i, 1);
+  buildHighlightsList();
+}
+
+function collectHighlights() {
+  return Array.from(document.querySelectorAll('#about-highlights-list .form-input')).map(el => el.value);
+}
+
+// ===== SKILLS =====
+function buildSkillsList() {
+  const list = document.getElementById('skills-list');
+  list.innerHTML = (data.skills || []).map((s, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">Skill ${i+1}</span>
+        <button class="item-remove-btn" onclick="removeSkill(${i})">✕</button>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input sk-name" value="${escHtml(s.name||'')}" placeholder="React"/></div>
+        <div class="form-group"><label class="form-label">Level (0-100)</label><input class="form-input sk-level" type="number" min="0" max="100" value="${s.level||50}"/></div>
+        <div class="form-group"><label class="form-label">Color</label><input class="form-input sk-color" type="color" value="${s.color||'#ffffff'}" style="padding:4px;height:42px;cursor:pointer"/></div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Icon Key</label><input class="form-input sk-icon" value="${escHtml(s.icon||'')}" placeholder="react, nodejs, typescript..."/></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addSkill() {
+  data.skills = data.skills || [];
+  data.skills.push({ name:'New Skill', level:70, color:'#888888', icon:'' });
+  buildSkillsList();
+}
+
+function removeSkill(i) { data.skills.splice(i, 1); buildSkillsList(); }
+
+function collectSkills() {
+  return Array.from(document.querySelectorAll('#skills-list .array-item')).map(item => ({
+    name: item.querySelector('.sk-name')?.value || '',
+    level: parseInt(item.querySelector('.sk-level')?.value) || 50,
+    color: item.querySelector('.sk-color')?.value || '#888',
+    icon: item.querySelector('.sk-icon')?.value || ''
+  }));
+}
+
+// ===== EDUCATION =====
+function buildEducationList() {
+  const list = document.getElementById('education-list');
+  list.innerHTML = (data.education || []).map((e, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">Entry ${i+1}</span>
+        <button class="item-remove-btn" onclick="removeEducation(${i})">✕</button>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Degree/Title</label><input class="form-input ed-degree" value="${escHtml(e.degree||'')}"/></div>
+        <div class="form-group"><label class="form-label">Year</label><input class="form-input ed-year" value="${escHtml(e.year||'')}"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Institution</label><input class="form-input ed-inst" value="${escHtml(e.institution||'')}"/></div></div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea ed-desc" rows="2">${escHtml(e.description||'')}</textarea></div>
+        <div class="form-group"><label class="form-label">Grade/GPA</label><input class="form-input ed-grade" value="${escHtml(e.grade||'')}"/></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addEducation() {
+  data.education = data.education || [];
+  data.education.push({ degree:'', institution:'', year:'', description:'', grade:'' });
+  buildEducationList();
+}
+
+function removeEducation(i) { data.education.splice(i, 1); buildEducationList(); }
+
+function collectEducation() {
+  return Array.from(document.querySelectorAll('#education-list .array-item')).map(item => ({
+    degree: item.querySelector('.ed-degree')?.value || '',
+    institution: item.querySelector('.ed-inst')?.value || '',
+    year: item.querySelector('.ed-year')?.value || '',
+    description: item.querySelector('.ed-desc')?.value || '',
+    grade: item.querySelector('.ed-grade')?.value || ''
+  }));
+}
+
+// ===== PROJECTS =====
+function buildProjectsList() {
+  const list = document.getElementById('projects-list');
+  list.innerHTML = (data.projects || []).map((p, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">${p.title || 'Project ' + (i+1)}</span>
+        <button class="item-remove-btn" onclick="removeProject(${i})">✕</button>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Title</label><input class="form-input pj-title" value="${escHtml(p.title||'')}"/></div>
+        <div class="form-group"><label class="form-label">Year</label><input class="form-input pj-year" value="${escHtml(p.year||'2024')}"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea pj-desc" rows="2">${escHtml(p.description||'')}</textarea></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input pj-tags" value="${(p.tags||[]).join(', ')}"/></div></div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Repo URL</label><input class="form-input pj-repo" value="${escHtml(p.repo||'')}"/></div>
+        <div class="form-group"><label class="form-label">Demo URL</label><input class="form-input pj-demo" value="${escHtml(p.demo||'')}"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Image URL (optional)</label><input class="form-input pj-image" value="${escHtml(p.image||'')}"/></div></div>
+      <div class="toggle-wrap" style="margin-top:8px">
+        <label class="toggle"><input type="checkbox" class="pj-featured" ${p.featured?'checked':''}/><div class="toggle-slider"></div></label>
+        <span class="toggle-label">Featured Project</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addProject() {
+  data.projects = data.projects || [];
+  data.projects.push({ title:'New Project', year:'2024', description:'', tags:[], repo:'#', demo:'#', image:'', featured:false });
+  buildProjectsList();
+}
+
+function removeProject(i) { data.projects.splice(i, 1); buildProjectsList(); }
+
+function collectProjects() {
+  return Array.from(document.querySelectorAll('#projects-list .array-item')).map(item => ({
+    title: item.querySelector('.pj-title')?.value || '',
+    year: item.querySelector('.pj-year')?.value || '',
+    description: item.querySelector('.pj-desc')?.value || '',
+    tags: (item.querySelector('.pj-tags')?.value || '').split(',').map(t => t.trim()).filter(Boolean),
+    repo: item.querySelector('.pj-repo')?.value || '',
+    demo: item.querySelector('.pj-demo')?.value || '',
+    image: item.querySelector('.pj-image')?.value || '',
+    featured: item.querySelector('.pj-featured')?.checked || false
+  }));
+}
+
+// ===== INTERNSHIPS =====
+function buildInternshipsList() {
+  const list = document.getElementById('internships-list');
+  list.innerHTML = (data.internships || []).map((intern, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">${intern.company || 'Internship ' + (i+1)}</span>
+        <button class="item-remove-btn" onclick="removeInternship(${i})">✕</button>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Company</label><input class="form-input in-company" value="${escHtml(intern.company||'')}"/></div>
+        <div class="form-group"><label class="form-label">Role</label><input class="form-input in-role" value="${escHtml(intern.role||'')}"/></div>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group"><label class="form-label">Period</label><input class="form-input in-period" value="${escHtml(intern.period||'')}"/></div>
+        <div class="form-group"><label class="form-label">Logo Letter</label><input class="form-input in-logo" value="${escHtml(intern.logo||'')}" maxlength="2"/></div>
+        <div class="form-group"><label class="form-label">Brand Color</label><input class="form-input in-color" type="color" value="${intern.color||'#333333'}" style="padding:4px;height:42px;cursor:pointer"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea in-desc" rows="3">${escHtml(intern.description||'')}</textarea></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Skills (comma separated)</label><input class="form-input in-skills" value="${(intern.skills||[]).join(', ')}"/></div></div>
+    </div>
+  `).join('');
+}
+
+function addInternship() {
+  data.internships = data.internships || [];
+  data.internships.push({ company:'Company', role:'Intern', period:'2024', description:'', skills:[], logo:'C', color:'#333333' });
+  buildInternshipsList();
+}
+
+function removeInternship(i) { data.internships.splice(i, 1); buildInternshipsList(); }
+
+function collectInternships() {
+  return Array.from(document.querySelectorAll('#internships-list .array-item')).map(item => ({
+    company: item.querySelector('.in-company')?.value || '',
+    role: item.querySelector('.in-role')?.value || '',
+    period: item.querySelector('.in-period')?.value || '',
+    logo: item.querySelector('.in-logo')?.value || '',
+    color: item.querySelector('.in-color')?.value || '#333',
+    description: item.querySelector('.in-desc')?.value || '',
+    skills: (item.querySelector('.in-skills')?.value || '').split(',').map(s => s.trim()).filter(Boolean)
+  }));
+}
+
+// ===== CERTIFICATES =====
+function buildCertificatesList() {
+  const list = document.getElementById('certificates-list');
+  list.innerHTML = (data.certificates || []).map((c, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">${c.title || 'Certificate ' + (i+1)}</span>
+        <button class="item-remove-btn" onclick="removeCertificate(${i})">✕</button>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Title</label><input class="form-input ct-title" value="${escHtml(c.title||'')}"/></div>
+        <div class="form-group"><label class="form-label">Issuer</label><input class="form-input ct-issuer" value="${escHtml(c.issuer||'')}"/></div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input ct-date" value="${escHtml(c.date||'')}"/></div>
+        <div class="form-group"><label class="form-label">Credential ID</label><input class="form-input ct-cred" value="${escHtml(c.credentialId||'')}"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea ct-desc" rows="2">${escHtml(c.description||'')}</textarea></div></div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">Image URL (optional)</label><input class="form-input ct-image" value="${escHtml(c.image||'')}"/></div>
+        <div class="form-group"><label class="form-label">Credential Link</label><input class="form-input ct-link" value="${escHtml(c.link||'')}"/></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addCertificate() {
+  data.certificates = data.certificates || [];
+  data.certificates.push({ title:'', issuer:'', date:'2024', description:'', credentialId:'', image:'', link:'#' });
+  buildCertificatesList();
+}
+
+function removeCertificate(i) { data.certificates.splice(i, 1); buildCertificatesList(); }
+
+function collectCertificates() {
+  return Array.from(document.querySelectorAll('#certificates-list .array-item')).map(item => ({
+    title: item.querySelector('.ct-title')?.value || '',
+    issuer: item.querySelector('.ct-issuer')?.value || '',
+    date: item.querySelector('.ct-date')?.value || '',
+    credentialId: item.querySelector('.ct-cred')?.value || '',
+    description: item.querySelector('.ct-desc')?.value || '',
+    image: item.querySelector('.ct-image')?.value || '',
+    link: item.querySelector('.ct-link')?.value || '#'
+  }));
+}
+
+// ===== CONTACT LINKS =====
+function buildContactLinksList() {
+  const list = document.getElementById('contact-links-list');
+  list.innerHTML = (data.contact?.links || []).map((l, i) => `
+    <div class="array-item">
+      <div class="array-item-header">
+        <span class="array-item-title">Link ${i+1}</span>
+        <button class="item-remove-btn" onclick="removeContactLink(${i})">✕</button>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group"><label class="form-label">Label</label><input class="form-input cl-label" value="${escHtml(l.label||'')}"/></div>
+        <div class="form-group"><label class="form-label">Value</label><input class="form-input cl-value" value="${escHtml(l.value||'')}"/></div>
+        <div class="form-group"><label class="form-label">Icon (email/github/linkedin/twitter)</label><input class="form-input cl-icon" value="${escHtml(l.icon||'')}"/></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label class="form-label">URL</label><input class="form-input cl-url" value="${escHtml(l.url||'')}"/></div></div>
+    </div>
+  `).join('');
+}
+
+function addContactLink() {
+  if (!data.contact) data.contact = {};
+  data.contact.links = data.contact.links || [];
+  data.contact.links.push({ label:'', value:'', icon:'email', url:'' });
+  buildContactLinksList();
+}
+
+function removeContactLink(i) { data.contact.links.splice(i, 1); buildContactLinksList(); }
+
+function collectContactLinks() {
+  return Array.from(document.querySelectorAll('#contact-links-list .array-item')).map(item => ({
+    label: item.querySelector('.cl-label')?.value || '',
+    value: item.querySelector('.cl-value')?.value || '',
+    icon: item.querySelector('.cl-icon')?.value || '',
+    url: item.querySelector('.cl-url')?.value || ''
+  }));
+}
+
+// ===== JSON EDITOR =====
+function loadJSONEditor() {
+  collectAll();
+  document.getElementById('jsonEditor').value = JSON.stringify(data, null, 2);
+}
+
+function validateJSON() {
+  const status = document.getElementById('jsonStatus');
+  try {
+    JSON.parse(document.getElementById('jsonEditor').value);
+    status.textContent = '✓ Valid JSON!';
+    status.className = 'json-status success';
+  } catch(e) {
+    status.textContent = '✕ Invalid JSON: ' + e.message;
+    status.className = 'json-status error';
+  }
+}
+
+function applyJSON() {
+  try {
+    data = JSON.parse(document.getElementById('jsonEditor').value);
+    populateAll();
+    showToast('JSON applied successfully!', 'success');
+    document.getElementById('jsonStatus').textContent = '✓ Applied!';
+    document.getElementById('jsonStatus').className = 'json-status success';
+  } catch(e) {
+    showToast('Invalid JSON: ' + e.message, 'error');
+  }
+}
+
+// ===== UTILS =====
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== INIT =====
+loadData();
+</script>
+</body>
+</html>

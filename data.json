@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "theme": "midnight",
+    "name": "Alex Rivera",
+    "tagline": "Full Stack Developer & Creative Technologist",
+    "bio": "I'm a passionate developer who loves crafting digital experiences that blend creativity with cutting-edge technology.",
+    "location": "San Francisco, CA",
+    "email": "alex@example.com",
+    "github": "https://github.com/alexrivera",
+    "linkedin": "https://linkedin.com/in/alexrivera",
+    "twitter": "https://twitter.com/alexrivera",
+    "resume": "#"
+  },
+  "scrollingBar": [
+    "⚡ Available for Freelance",
+    "🚀 Open to New Opportunities",
+    "💡 Creative Problem Solver",
+    "🌍 Remote Friendly",
+    "🎯 5+ Years Experience",
+    "🔥 Passionate About AI & Web3",
+    "✨ Building the Future"
+  ],
+  "about": {
+    "headline": "About Me",
+    "description": "I'm a Full Stack Developer with 5+ years of experience building scalable web applications and immersive digital experiences. My journey started with a curiosity for how things work on the internet, and it evolved into a career I'm deeply passionate about.\n\nI specialize in React, Node.js, and cloud architecture, but I'm always eager to explore new technologies. When I'm not coding, you'll find me contributing to open-source projects or mentoring junior developers.",
+    "highlights": ["5+ Years Experience", "50+ Projects Delivered", "10+ Happy Clients", "3 Open Source Contributions"]
+  },
+  "skills": [
+    { "name": "React", "level": 92, "color": "#61DAFB", "icon": "react" },
+    { "name": "Node.js", "level": 88, "color": "#339933", "icon": "nodejs" },
+    { "name": "TypeScript", "level": 85, "color": "#3178C6", "icon": "typescript" },
+    { "name": "Python", "level": 80, "color": "#3776AB", "icon": "python" },
+    { "name": "Docker", "level": 75, "color": "#2496ED", "icon": "docker" },
+    { "name": "AWS", "level": 70, "color": "#FF9900", "icon": "aws" },
+    { "name": "GraphQL", "level": 78, "color": "#E10098", "icon": "graphql" },
+    { "name": "MongoDB", "level": 82, "color": "#47A248", "icon": "mongodb" },
+    { "name": "Git", "level": 95, "color": "#F05032", "icon": "git" },
+    { "name": "Figma", "level": 72, "color": "#F24E1E", "icon": "figma" }
+  ],
+  "education": [
+    {
+      "degree": "B.Sc. Computer Science",
+      "institution": "MIT — Massachusetts Institute of Technology",
+      "year": "2018 – 2022",
+      "description": "Specialized in Artificial Intelligence and Distributed Systems. Dean's List for 3 consecutive years.",
+      "grade": "GPA: 3.9/4.0"
+    },
+    {
+      "degree": "Full Stack Bootcamp",
+      "institution": "Codecademy Pro Intensive",
+      "year": "2017 – 2018",
+      "description": "Intensive 6-month program covering modern web development, agile methodologies, and project-based learning.",
+      "grade": "Top 5% Graduate"
+    },
+    {
+      "degree": "High School Diploma",
+      "institution": "Lincoln Tech High School",
+      "year": "2014 – 2018",
+      "description": "Advanced Placement in Mathematics and Computer Science. Led the school's robotics club to state championships.",
+      "grade": "Valedictorian"
+    }
+  ],
+  "projects": [
+    {
+      "title": "NeuralChat AI",
+      "year": "2024",
+      "description": "A real-time AI-powered chat platform with multi-modal capabilities, supporting text, image, and voice interactions using OpenAI APIs.",
+      "tags": ["React", "Node.js", "OpenAI", "WebSockets"],
+      "repo": "https://github.com/alexrivera/neuralchat",
+      "demo": "#",
+      "image": "",
+      "featured": true
+    },
+    {
+      "title": "CryptoTracker Dashboard",
+      "year": "2023",
+      "description": "Real-time cryptocurrency portfolio tracker with advanced analytics, price alerts, and multi-exchange integration.",
+      "tags": ["Vue.js", "Python", "Redis", "Chart.js"],
+      "repo": "https://github.com/alexrivera/cryptotracker",
+      "demo": "#",
+      "image": "",
+      "featured": false
+    },
+    {
+      "title": "EcoRoute",
+      "year": "2023",
+      "description": "A sustainable travel planner that calculates carbon footprint for different travel modes and suggests eco-friendly alternatives.",
+      "tags": ["React Native", "GraphQL", "PostgreSQL"],
+      "repo": "https://github.com/alexrivera/ecoroute",
+      "demo": "#",
+      "image": "",
+      "featured": false
+    },
+    {
+      "title": "DevCollab",
+      "year": "2022",
+      "description": "Real-time collaborative code editor with video calls, whiteboard, and AI-powered code suggestions for remote teams.",
+      "tags": ["Next.js", "Socket.io", "WebRTC", "Monaco"],
+      "repo": "https://github.com/alexrivera/devcollab",
+      "demo": "#",
+      "image": "",
+      "featured": true
+    }
+  ],
+  "internships": [
+    {
+      "company": "Google",
+      "role": "Software Engineering Intern",
+      "period": "Summer 2021",
+      "description": "Worked on the Google Maps team to optimize routing algorithms, reducing computation time by 23%. Collaborated with senior engineers on large-scale distributed systems.",
+      "skills": ["C++", "Python", "Kubernetes", "BigQuery"],
+      "logo": "G",
+      "color": "#4285F4"
+    },
+    {
+      "company": "Stripe",
+      "role": "Frontend Engineering Intern",
+      "period": "Winter 2020",
+      "description": "Built internal developer tools and contributed to the Stripe Dashboard redesign. Improved page load performance by 40% through code splitting and lazy loading.",
+      "skills": ["React", "TypeScript", "Ruby", "Figma"],
+      "logo": "S",
+      "color": "#635BFF"
+    },
+    {
+      "company": "Vercel",
+      "role": "DevOps Engineering Intern",
+      "period": "Summer 2020",
+      "description": "Automated CI/CD pipelines and built monitoring dashboards for deployment health. Reduced deployment failures by 35% through improved testing frameworks.",
+      "skills": ["Next.js", "AWS", "Terraform", "Docker"],
+      "logo": "V",
+      "color": "#111111"
+    }
+  ],
+  "certificates": [
+    {
+      "title": "AWS Solutions Architect",
+      "issuer": "Amazon Web Services",
+      "date": "2023",
+      "description": "Professional level certification validating expertise in designing distributed applications and systems on the AWS platform.",
+      "credentialId": "AWS-SAP-2023-ARV",
+      "image": "",
+      "link": "#"
+    },
+    {
+      "title": "Google Cloud Professional",
+      "issuer": "Google Cloud",
+      "date": "2022",
+      "description": "Demonstrates ability to design, develop, and manage GCP solutions including robust, secure, scalable, and dynamic solutions.",
+      "credentialId": "GCP-PDE-2022-001",
+      "image": "",
+      "link": "#"
+    },
+    {
+      "title": "Meta React Developer",
+      "issuer": "Meta (Facebook)",
+      "date": "2022",
+      "description": "Comprehensive certification covering React fundamentals, hooks, state management, testing, and advanced patterns.",
+      "credentialId": "META-RD-2022-ARV",
+      "image": "",
+      "link": "#"
+    }
+  ],
+  "contact": {
+    "headline": "Get In Touch",
+    "subheading": "Let's build something amazing together",
+    "description": "Whether you have a project in mind, a question, or just want to say hello — my inbox is always open. I'll get back to you as soon as possible!",
+    "links": [
+      { "label": "Email", "value": "alex@example.com", "icon": "email", "url": "mailto:alex@example.com" },
+      { "label": "GitHub", "value": "@alexrivera", "icon": "github", "url": "https://github.com/alexrivera" },
+      { "label": "LinkedIn", "value": "Alex Rivera", "icon": "linkedin", "url": "https://linkedin.com/in/alexrivera" },
+      { "label": "Twitter", "value": "@alexrivera", "icon": "twitter", "url": "https://twitter.com/alexrivera" }
+    ]
+  }
+}
