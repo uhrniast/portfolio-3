@@ -1,12 +1,12 @@
 {
   "meta": {
-    "theme": "royal",
-    "name": "sunaY",
+    "theme": "midnight",
+    "name": "SUNAY",
     "tagline": "Full Stack Developer & Creative Technologist",
     "bio": "I'm a passionate developer who loves crafting digital experiences that blend creativity with cutting-edge technology.",
-    "location": "CA",
+    "location": "PDTR",
     "email": "hopeyourself04@@example.com",
-    "github": "https://github.com/alexrivera",
+    "github": "https://github.com/SUNAY-6",
     "linkedin": "https://linkedin.com/in/alexrivera",
     "twitter": "https://twitter.com/alexrivera",
     "resume": "#"
@@ -27,7 +27,6 @@
     "highlights": [
       "5+ Years Experience",
       "0+ Projects Delivered",
-      "10+ Happy Clients",
       "3 Open Source Contributions"
     ]
   },
@@ -63,18 +62,6 @@
       "icon": "docker"
     },
     {
-      "name": "AWS",
-      "level": 70,
-      "color": "#ff9900",
-      "icon": "aws"
-    },
-    {
-      "name": "GraphQL",
-      "level": 78,
-      "color": "#e10098",
-      "icon": "graphql"
-    },
-    {
       "name": "MongoDB",
       "level": 82,
       "color": "#47a248",
@@ -97,6 +84,12 @@
       "level": 70,
       "color": "#888888",
       "icon": ""
+    },
+    {
+      "name": "jitter",
+      "level": 70,
+      "color": "#888888",
+      "icon": ""
     }
   ],
   "education": [
@@ -108,37 +101,31 @@
       "grade": "GPA: 3.9/4.0"
     },
     {
-      "degree": "Full Stack Bootcamp",
-      "institution": "Codecademy Pro Intensive",
-      "year": "2017 – 2018",
-      "description": "Intensive 6-month program covering modern web development, agile methodologies, and project-based learning.",
-      "grade": "Top 5% Graduate"
-    },
-    {
-      "degree": "High School Diploma",
-      "institution": "Lincoln Tech High School",
-      "year": "2014 – 2018",
-      "description": "Advanced Placement in Mathematics and Computer Science. Led the school's robotics club to state championships.",
-      "grade": "Valedictorian"
+      "degree": "Intermediate",
+      "institution": "Deepthi Junior College",
+      "year": "2020-2022",
+      "description": "Advanced Placement in Mathematics , Phycics , Chemistry. Led the school's  to state championships.",
+      "grade": "75%"
     },
     {
       "degree": "school",
       "institution": "narayana",
       "year": "2020",
-      "description": "rasdtfyuio;pityhfdgxcvbnjhlkujygfd",
+      "description": "corona batch",
       "grade": "9.8"
     }
   ],
   "projects": [
     {
-      "title": "NeuralChat AI",
-      "year": "2024",
-      "description": "A real-time AI-powered chat platform with multi-modal capabilities, supporting text, image, and voice interactions using OpenAI APIs.",
+      "title": "A Multi-Layer Framework for Secure and Scalable   Permissioned Blockchain  Integration in  Industrial  IOT Systems",
+      "year": "2026",
+      "description": "Design and Developing the Multi-Layer Framework for Secure and Scalable Permissioned Blockchain Integration in Industrial IoT Systems\n\nIdentifying challenges and gaps from existing architecture and also Analyzing consensus protocols, governance models and interoperability mechanisms.",
       "tags": [
-        "React",
-        "Node.js",
-        "OpenAI",
-        "WebSockets"
+        "python",
+        "json",
+        "html",
+        "css",
+        "js"
       ],
       "repo": "https://github.com/alexrivera/neuralchat",
       "demo": "#",
